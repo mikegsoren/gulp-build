@@ -1,0 +1,151 @@
+
+- mediaQueries = {}
+- mediaQueries["sm"] = "only screen and (max-width: 640px)"
+- mediaQueries["smr"] = "only screen and (max-width: 640px) and (-webkit-min-device-pixel-ratio: 2)"
+- mediaQueries["md"] = "only screen and (min-width: 641px) and (max-width: 1024px)"
+- mediaQueries["mdr"] = "only screen and (min-width: 641px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2)"
+- mediaQueries["lg"] = "only screen and (min-width: 1025px)"
+- mediaQueries["lgr"] = "only screen and (min-width: 1025px) and (-webkit-min-device-pixel-ratio: 2)"
+
+- var addClass = function(compareA, compareB, klass) {
+-     return (compareA === compareB) ? klass : '';
+- };
+
+- var cacheBuster = function() {
+-   if(dev) {
+-     return '?' + (+new Date());
+-   } else {
+-     var coeff = 1000 * 60 * 5; // nearest 5 minute
+-     var date = new Date();
+-     var rounded = +new Date(Math.round(date.getTime() / coeff) * coeff);
+-     return '?' + rounded;
+-   }
+- };
+
+mixin script(path)
+    script(src="#{path}")
+
+mixin cbscript(path)
+    script(src="#{path}#{cacheBuster()}")
+
+//- Inline script
+mixin iscript(path)
+    script(src="#{path}?__inline=true")
+
+mixin link(path)
+    link(rel="stylesheet", href="#{path}")
+
+mixin cblink(path)
+    link(rel="stylesheet", href="#{path}#{cacheBuster()}")
+
+//- Inline link
+mixin ilink(path)
+    link(rel="stylesheet",href="#{path}?__inline=true")
+
+mixin favicon(path)
+    link(rel="shortcut icon", type="image/x-icon", href="#{path}#{cacheBuster()}")
+
+//- IE Conditionals
+mixin ie(condition)
+    | 
+    | <!--[!{condition}]>
+    | 
+    block
+    | 
+    | <![endif]-->
+    | 
+
+mixin not-ie(condition)
+    - condition = (typeof condition !== 'undefined') ? condition : '!IE';
+    | 
+    | <!--[if !{condition}]> -->
+    | 
+    block
+    | 
+    | <!-- <![endif]-->
+    | 
+
+
+mixin picture-legacy
+    picture&attributes(attributes)
+        block
+        | <!--[if IE 9]><video style="display: none;"><![endif]-->
+        +source
+        | <!--[if IE 9]></video><![endif]-->
+        +img
+
+mixin source-srcset(mq, srcset, type)
+    - var media = mediaQueries[mq]
+    if media
+        source(media=media, srcset!=srcset, type=type)
+
+mixin img-srcset(srcset, alt)
+    img(srcset!=srcset, alt=alt)
+
+mixin google-fonts(fonts)
+    +not-ie()
+        +link("//fonts.googleapis.com/css?family=" + fonts, false)
+    +ie("if IE 9")
+        +link("//fonts.googleapis.com/css?family=" + fonts, false)
+    +ie("if IE 8")
+        each fontFamily in fonts.split('|')
+            - var splitCollection = fontFamily.split(':');
+            - var fontName = splitCollection[0];
+            - var fontStyles = splitCollection[1];
+            each fontStyle in fontStyles.split(',')
+                +link("//fonts.googleapis.com/css?family=" + fontName + ":" + fontStyle, false)
+
+mixin picture(name, alt)
+    picture&attributes(attributes)
+        | <!--[if IE 9]><video style="display: none;"><![endif]-->
+        //- small
+        source(media=mediaQueries.sm, srcset="img/sm/#{name}")
+        //- medium
+        source(media=mediaQueries.md, srcset="img/md/#{name}")
+        //- large
+        source(media=mediaQueries.lg, srcset="img/lg/#{name}")
+        | <!--[if IE 9]></video><![endif]-->
+        img(srcset="img/lg/#{name}", alt=alt)
+
+//- Rewrote picture mixin to be easier
+mixin picture-retina(name, alt, combined)
+    - var combined = (typeof combined !== 'undefined') ? combined : false;
+    picture&attributes(attributes)
+        | <!--[if IE 9]><video style="display: none;"><![endif]-->
+        if !combined
+            //- Separate sources for each query
+            //- small retina
+            source(media=mediaQueries.smr, srcset="img/smr/#{name} 2x")
+            //- small
+            source(media=mediaQueries.sm, srcset="img/sm/#{name} 1x")
+            //- medium retina
+            source(media=mediaQueries.mdr, srcset="img/mdr/#{name} 2x")
+            //- medium
+            source(media=mediaQueries.md, srcset="img/md/#{name} 1x")
+            //- large retina
+            source(media=mediaQueries.lgr, srcset="img/lgr/#{name} 2x")
+            //- large
+            source(media=mediaQueries.lg, srcset="img/lg/#{name} 1x")
+        else if combined
+            //- combined sources for retina/non-retina
+            //- small
+            source(media=mediaQueries.sm, srcset="img/sm/#{name} 1x, img/smr/#{name} 2x")
+            //- medium
+            source(media=mediaQueries.md, srcset="img/md/#{name} 1x, img/mdr/#{name} 2x")
+            //- large
+            source(media=mediaQueries.lg, srcset="img/lg/#{name} 1x, img/lgr/#{name} 2x")
+        | <!--[if IE 9]></video><![endif]-->
+        img(srcset="img/lg/#{name}", alt=alt)
+    //- noscript
+        img(src="img/lg/#{name}", alt=alt)
+
+//- Picture mixin for SVG with IMG fallback
+mixin picture-svg(svg, fallback, alt)
+    picture&attributes(attributes)
+        | <!--[if IE 9]><video style="display: none;"><![endif]-->
+        source(type='image/svg+xml', srcset='img/#{svg}')
+        | <!--[if IE 9]></video><![endif]-->
+        img(srcset="img/#{fallback}", alt=alt)
+    //- noscript
+        img(src="img/lg/#{name}", alt=alt)
+

@@ -1,0 +1,8 @@
+mixin modal(name, closeSprite)
+    - closeSprite = (typeof closeSprite === 'undefined') ? 'close--blue' : closeSprite;
+    .modal(class="modal--#{name}")&attributes(attributes)
+        .modal__outer
+            .modal__inner
+                div(class="sprite--#{closeSprite}", ng-click="close()").modal__close
+                .modal__scroll(ng-click="repaint($event)")
+                    block

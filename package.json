@@ -1,0 +1,23 @@
+{
+  "name": "gulp-build",
+  "version": "1.0.0",
+  "description": "Generic Gulp Build for Web Projects",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp-scss": "^1.3.17",
+    "gulp-jade": "^1.1.0",
+    "pug": "^2.0.0-alpha3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-pug": "^1.2.0",
+    "gulp-scss": "^1.3.17",
+    "gulp-yaml": "^1.0.1",
+    "pug": "^2.0.0-alpha3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike Sorensen",
+  "license": "MIT"
+}

@@ -1,0 +1,18 @@
+mixin accordion(query, autoclose)
+    - query = (typeof query === 'string') ? query : '';
+    - autoclose = (autoclose === true) ? 'true' : 'false';
+    - var klass = (query) ? 'accordion--' + query : '';
+    .accordion(accordion="", accordian-query=query, accordian-autoclose=autoclose, class=klass)&attributes(attributes)
+        block
+
+        .accordion__header
+            .accordion__controls
+                .icon.sprite--plus.is--vc
+                .icon.sprite--minus.is--vc
+                .icon.sprite--question--white.is--vc
+                .icon.sprite--question--blue.is--vc
+            +header
+        .accordion__wrap
+            .accordion__content
+                +content
+
