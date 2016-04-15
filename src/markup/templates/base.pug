@@ -4,21 +4,26 @@ include /mixins/accordion.pug
 doctype
 html(lang="en", xmlns:ng="http://angularjs.org", id="ng-app", ng-app="party", ng-controller="MainController", ng-class="{'no-scroll': stickyFooterOpen}", class=(dev === true) ? "in-dev" : "")
 
+    //- pull in meta data from page
+    block meta
+
     head
         meta(http-equiv="X-UA-Compatible", content="IE=edge,chrome=1")
         meta(charset="utf-8")
 
-        if page.title
-            title.
-                #{page.title} - #{site.title}
-        else
-            title.
-                #{site.title}
+        title #{title}
 
-        if page.description
-            meta(name="description", content="#{page.description}")
-        if page.keywords
-            meta(name="keywords", content="#{page.keywords}")
+        //- if page.title
+        //-     title.
+        //-         #{page.title} - #{site.title}
+        //- else
+        //-     title.
+        //-         #{site.title}
+
+        //- if page.description
+        //-     meta(name="description", content="#{page.description}")
+        //- if page.keywords
+        //-     meta(name="keywords", content="#{page.keywords}")
 
         meta(name="format-detection", content="telephone=no")
 
@@ -36,13 +41,13 @@ html(lang="en", xmlns:ng="http://angularjs.org", id="ng-app", ng-app="party", ng
 
         +cbscript("js/head.js")
 
-    body(ontouchstart="", class="section--#{page.section} page--#{fileName}", prime-directive="")
+    body(ontouchstart="", class="page--" + pageClass, prime-directive="")
 
         include /partials/header--global.pug
 
         main.content--main
 
-                block content
+            block content
 
         include /partials/footer--global.pug
 

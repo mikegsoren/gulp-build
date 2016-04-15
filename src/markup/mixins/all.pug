@@ -23,24 +23,30 @@
 - };
 
 mixin script(path)
-    script(src="#{path}")
+    //- script(src="#{path}")
+    script(src="/" + path)
 
 mixin cbscript(path)
-    script(src="#{path}#{cacheBuster()}")
+    //- script(src="#{path}#{cacheBuster()}")
+    script(src='/' + path)
 
 //- Inline script
 mixin iscript(path)
-    script(src="#{path}?__inline=true")
+    //- script(src="#{path}?__inline=true")
+    script(src="/" + path + "__inline=true")
 
 mixin link(path)
-    link(rel="stylesheet", href="#{path}")
+    //- link(rel="stylesheet", href="#{path}")
+    link(rel="stylesheet", href='/' + path)
 
 mixin cblink(path)
-    link(rel="stylesheet", href="#{path}#{cacheBuster()}")
+    //- link(rel="stylesheet", href="#{path}#{cacheBuster()}")
+    link(rel="stylesheet", href='/' + path)
 
 //- Inline link
 mixin ilink(path)
-    link(rel="stylesheet",href="#{path}?__inline=true")
+    //- link(rel="stylesheet",href="#{path}?__inline=true")
+    link(rel="stylesheet",href="/" + path + "__inline=true")
 
 mixin favicon(path)
     link(rel="shortcut icon", type="image/x-icon", href="#{path}#{cacheBuster()}")

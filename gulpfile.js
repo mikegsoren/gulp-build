@@ -1,17 +1,24 @@
 var gulp 			= require('gulp'),
-	yaml 			= require('gulp-yaml'),
+	clean 			= require('gulp-clean'),
 	pug 			= require('gulp-pug'),
 	sass 			= require('gulp-sass'),
 	autoprefixer 	= require('gulp-autoprefixer'),
-	concat 			= require('gulp-concat');
+	concat 			= require('gulp-concat'),
+	webserver 		= require('gulp-webserver'),
+	watch 			= require('gulp-watch');
 
 
-// YAML
-// gulp.task('')
+
+// clean dist before compiling:
+gulp.task('clean', function () {
+	return gulp.src('./dist/**/*', {read: false})
+		.pipe(clean());
+});
+
 
 
 // JADE/PUG TEMPLATES
-gulp.task('pug', function() {
+gulp.task('pug', ['clean'], function() {
 
   	return gulp.src('./src/markup/pages/**/*.pug')
     	.pipe(pug({
@@ -23,7 +30,7 @@ gulp.task('pug', function() {
 
 
 // SASS STYLES
-gulp.task('sass', function () {
+gulp.task('sass', ['clean'], function () {
   
   	return gulp.src('./src/styles/*.scss')
 	    .pipe(sass().on('error', sass.logError))
@@ -34,7 +41,7 @@ gulp.task('sass:watch', function () {
   	gulp.watch('./src/styles/**/*.scss', ['sass']);
 });
 
-gulp.task('autoprefixer', function () {
+gulp.task('autoprefixer', ['clean'], function () {
 	return gulp.src('./dist/css/styles.css')
 		.pipe(autoprefixer({
 			browsers: ['last 2 versions'],
@@ -45,7 +52,7 @@ gulp.task('autoprefixer', function () {
 
 
 // JS CONCATENATION
-gulp.task('scripts-app', function() {
+gulp.task('scripts-app', ['clean'], function() {
   	return gulp.src([
 	  		'src/scripts/app/vendor/ngMask.js',
 	        'src/scripts/app/vendor/rcMailgun.js',
@@ -63,7 +70,7 @@ gulp.task('scripts-app', function() {
 	    .pipe(gulp.dest('./dist/js/'));
 });
 
-gulp.task('scripts-head', function() {
+gulp.task('scripts-head', ['clean'], function() {
 	return gulp.src([
 			'src/scripts/vendor/console.min.js',
 	        'src/scripts/vendor/requestAnimationFrame.min.js',
@@ -77,7 +84,7 @@ gulp.task('scripts-head', function() {
 	    .pipe(gulp.dest('./dist/js/'));
 });
 
-gulp.task('scripts-vendor', function() {
+gulp.task('scripts-vendor', ['clean'], function() {
 	return gulp.src([
 			'src/scripts/vendor/lodash.min.js',
 	        'src/scripts/vendor/parseuri.min.js',
@@ -100,11 +107,32 @@ gulp.task('scripts-vendor', function() {
 });
 
 
+//	LETS RUN US A SERVER!  HOOOOOOO BOY!
+gulp.task('webserver', ['pug', 'styles', 'scripts'], function() {
+  	gulp.src('./dist/')
+    	.pipe(webserver({
+    		path: '/dist/',
+      		fallback: 'index.html',
+    		port: 6660,
+      		livereload: true,
+      		directoryListing: true,
+      		open: true
+    	}));
+});
+
+
+
+// Watch for changes, run default build on change
+gulp.task('watch', function () {
+    watch('./src/**/*', ['base']);
+});
+
 
 // DELEGATION TASKS
-gulp.task('styles', ['sass', 'autoprefixer', 'sass:watch']);
-gulp.task('scripts', ['scripts-app', 'scripts-head', 'scripts-vendor']);
+gulp.task('styles', ['sass', 'autoprefixer', 'sass:watch']);				// all css garbage
+gulp.task('scripts', ['scripts-app', 'scripts-head', 'scripts-vendor']);	// all js garbage
+gulp.task('base', ['clean', 'pug', 'styles', 'scripts']);					// the necessities (complete compilation)
 
 
 // MAIN TASKS:
-gulp.task('default', ['pug', 'styles', 'scripts']);
+gulp.task('default', ['base', 'webserver', 'watch']);	// compile, serve, watch 
