@@ -3,7 +3,7 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.services')
+    angular.module('ms.services')
 
     .factory('ModalService', ['$window', '$document', '$compile', '$controller', '$http', '$rootScope', '$q', '$timeout', '$templateCache',
         function($window, $document, $compile, $controller, $http, $rootScope, $q, $timeout, $templateCache) {

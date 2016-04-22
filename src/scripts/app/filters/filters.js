@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.filters', ['ngSanitize'])
+    angular.module('ms.filters', ['ngSanitize'])
 
     // Return trusted html
     .filter('htrust', ['$sce',

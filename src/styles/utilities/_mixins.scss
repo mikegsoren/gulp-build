@@ -1,0 +1,324 @@
+// Mixin to allow sprites to work inside media queries
+// Source: https://gist.github.com/brubrant/3166895
+
+// Modified to support retina
+// Retina inspiration: http://www.wunderkraut.com/blog/responsive-retina-sprites-with-compass/2014-04-16
+
+// http://compass-style.org/reference/compass/helpers/sprites/
+@mixin get-sprite($map, $sprite, $retina: false, $repeat: no-repeat, $include-height: true, $include-width: true) {
+
+    //http://compass-style.org/reference/compass/helpers/sprites/#sprite-file
+    $sprite-image: sprite-file($map, $sprite);
+
+    // http://compass-style.org/reference/compass/helpers/sprites/#sprite-url
+    $sprite-map: sprite-url($map);
+
+    // http://compass-style.org/reference/compass/helpers/sprites/#sprite-position
+    $sprite-position: sprite-position($map, $sprite);
+
+    @if $retina == true {
+        $sprite-position: round(nth(sprite-position($map, $sprite), 1) / 2) round(nth(sprite-position($map, $sprite), 2) / 2)
+    }
+
+    // Returns background
+    background: $sprite-map $sprite-position $repeat;
+
+    @if $retina == true {
+        background-size: (image-width(sprite-path($map)) / 2) (image-height(sprite-path($map)) / 2);
+    } @else {
+        background-size: image-width(sprite-path($map)) image-height(sprite-path($map));
+    }
+
+    $height: 0;
+    $width: 0;
+
+    @if $retina == true {
+        $height: (image-height($sprite-image) / 2);
+        $width: (image-width($sprite-image) / 2);
+    } @else {
+        $height: image-height($sprite-image);
+        $width: image-width($sprite-image);
+    }
+
+    // http://compass-style.org/reference/compass/helpers/image-dimensions/
+    // Checks to see if the user wants height returned
+    @if $include-height == true {
+        // Returns the height
+        height: $height;
+    }
+
+    // http://compass-style.org/reference/compass/helpers/image-dimensions/
+    // Checks to see if the user wants height returned
+    @if $include-width == true {
+        // Returns the width
+        width: $width;
+    }
+
+    &.is--hc {
+        margin-left: -#{($width/2)};
+    }
+    &.is--vc {
+        margin-top: -#{($height/2)};
+    }
+}
+
+// Mixin used to get dimensions of sprite for query
+@mixin get-sprite-dimensions-for-query($query, $sprite) {
+
+    $glob: $query + "/sprites/*.png";
+    $map: sprite-map($glob);
+    $names: sprite-names($map);
+    $retina: map-get($queries, $query);
+
+    $sprite-image: sprite-file($map, $sprite);
+
+    $sprite-height: image-height($sprite-image);
+    $sprite-width: image-width($sprite-image);
+
+    @if $retina == true {
+        height: $sprite-height / 2;
+        width: $sprite-width / 2;
+    } @else {
+        height: $sprite-height;
+        width: $sprite-width;
+    }
+}
+
+// Mixin used to get specific sprite for a specific query
+@mixin get-sprite-for-query($query, $sprite, $wrap: false) {
+
+    $glob: $query + "/sprites/*.png";
+    $map: sprite-map($glob);
+    $names: sprite-names($map);
+
+    @if $wrap == true {
+        @include mq($query) {
+            @include get-sprite($map, $sprite, query-is-retina($query));
+        }
+    } @else {
+        @include get-sprite($map, $sprite, query-is-retina($query));
+    }
+}
+
+// Mixin used to get a specific sprite for all queries
+@mixin get-sprite-for-all-queries($sprite) {
+
+    @each $query, $retina in $queries {
+        @include get-sprite-for-query($query, $sprite, true);
+    }
+
+}
+
+// Prevent margin collapse due to the first element having a margin-top
+@mixin no-margin-collapse {
+    padding-top: 1px;
+    margin-top: -1px;
+}
+
+// I don't like bourbons
+@mixin clearfix {
+    &:before,
+    &:after {
+        content: " ";
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+@mixin inline-block {
+    display: inline-block;
+    *zoom: 1;
+    *display: inline;
+}
+
+@mixin all {
+    &, &:before, &:after {
+        @content;
+    }
+}
+
+@mixin hover($active: '') {
+
+    @if $active == true {
+
+        // @debug "1";
+
+        &.active,
+        .touch &:active,
+        .no-touch &:hover {
+            @content;
+        }
+
+    } @else if $active == false {
+
+        // @debug "2";
+
+        .touch &:active,
+        .no-touch &:hover {
+            @content;
+        }
+
+    } @else if $active != '' {
+
+        // @debug "3";
+
+        &#{$active},
+        &.active,
+        .touch &:active,
+        .no-touch &:hover {
+            @content;
+        }
+
+    } @else {
+
+        // @debug "4";
+
+        &.active,
+        .touch &:active,
+        .no-touch &:hover {
+            @content;
+        }
+
+    }
+}
+
+
+@mixin accordion-color($color) {
+    & {
+        border-color: $color;
+
+        .accordion__wrap {
+            border-top-color: $color;
+        }
+
+        .wrap--symbol:before {
+            background: $color;
+        }
+    }
+}
+
+@mixin responsive-bg($img) {
+
+    @each $query, $retina in $queries {
+        @include mq($query) {
+            @include bst-img($query + "/" + $img, $retina) {
+                @content;
+            }
+        }
+    }
+}
+
+@mixin hero-img($img, $color: white, $retina: false) {
+
+    $img: "hero/" + $img;
+
+    @if file_exists("src/images/" + $img) {
+
+        $background-image: image-url($img);
+        $background-position: top center;
+        $background-repeat: no-repeat;
+        $background-color: $color;
+
+        $height: image-height($img);
+        $width: image-width($img);
+
+        @if $retina == true {
+            $height: $height / 2;
+            $width: $width / 2;
+        }
+
+        // min-height: #{round($height)};
+
+        $background-size: #{round($width)} #{round($height)};
+
+        background: $background-color $background-image $background-position $background-repeat;
+        background-size: #{round($width)} #{round($height)};
+
+
+    } @else {
+
+        // if it doesnt exist, chances are its not visible in that query anyway..
+        // display: none;
+
+        // turned off annoying message
+        // @warn $img + " does not exist";
+    }
+}
+
+
+// ---------- Opacity ----------
+
+@mixin opacity($value) {
+    opacity: $value;
+    filter: alpha(opacity=#{$value * 100});
+    // -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=#{$value * 100})";
+}
+
+// ---------- Rem Fallback ----------
+
+@mixin rem-fallback($property, $values...) {
+    $pxValues: '';
+    $remValues: '';
+
+    @for $i from 1 through length($values) {
+        $value: frost--none(nth($values, $i));
+        $pxValues: #{$pxValues + frost--px($value * $frostbasefontsize)};
+        $remValues: #{$remValues + frost--rem($value)};
+
+        @if $i < length($values){
+            $pxValues: #{$pxValues + " "};
+            $remValues: #{$remValues + " "};
+        }
+    }
+
+    #{$property}: $pxValues;
+    #{$property}: $remValues;
+}
+
+// ---------- Media Queries ----------
+
+@mixin mq($queries...) {
+
+    $combine: true;
+    $q: ();
+
+    @each $query in $queries {
+
+        @if not map-has-key($media-queries, $query) {
+
+            @warn "No media query found for `#{$query}` in $media-queries map. Content omitted.";
+
+        } @else {
+
+            @if $combine == true {
+
+                $q: append($q, #{map-get($media-queries, $query)});
+
+            } @else {
+
+                @media #{map-get($media-queries, $query)} {
+                    @content;
+                }
+
+            }
+        }
+    }
+
+    @if $combine == true {
+
+        $joined: join($q, (), comma);
+
+        @media #{$joined} {
+            @content;
+        }
+
+    }
+}
+
+@mixin trans-bg {
+    .eq-ie & {
+        background: image-url("transparent.gif");
+    }
+}

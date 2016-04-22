@@ -1,0 +1,21 @@
+header.header--global {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: z("header", "global");
+    width: 100%;
+    background: transparent;
+
+    @include mq("sm") {
+        min-width: 320px;
+
+        .nav-open & {
+            z-index: z("header", "navopen");
+        }
+    }
+
+    .wrap--content {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}

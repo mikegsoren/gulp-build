@@ -1,17 +1,20 @@
 var gulp 			= require('gulp'),
 	clean 			= require('gulp-clean'),
 	pug 			= require('gulp-pug'),
+	bourbon 		= require("node-bourbon").includePaths,
+	neat 			= require("node-neat").includePaths,
 	sass 			= require('gulp-sass'),
 	autoprefixer 	= require('gulp-autoprefixer'),
 	concat 			= require('gulp-concat'),
-	webserver 		= require('gulp-webserver'),
-	watch 			= require('gulp-watch');
+	connect 		= require('gulp-connect'),
+	watch 			= require('gulp-watch'),
+	livereload 		= require('gulp-livereload');
 
 
 
 // clean dist before compiling:
 gulp.task('clean', function () {
-	return gulp.src('./dist/**/*', {read: false})
+	return gulp.src('dist/**/*', {read: false})
 		.pipe(clean());
 });
 
@@ -20,40 +23,63 @@ gulp.task('clean', function () {
 // JADE/PUG TEMPLATES
 gulp.task('pug', ['clean'], function() {
 
-  	return gulp.src('./src/markup/pages/**/*.pug')
+  	gulp.src('src/markup/pages/**/*.pug')
     	.pipe(pug({
     		pretty: true,
-    		basedir: './src/markup/'
+    		basedir: 'src/markup/'
     	}))
-    	.pipe(gulp.dest('./dist'));
+    	.pipe(gulp.dest('dist'))
+    	.pipe(connect.reload());
 });
+
+gulp.task('markup:watch', ['base'], function () {
+	gulp.watch('src/markup/**/*.pug', ['base']);
+});
+
+
+
+
 
 
 // SASS STYLES
+
+// first compile sass styles
 gulp.task('sass', ['clean'], function () {
   
-  	return gulp.src('./src/styles/*.scss')
-	    .pipe(sass().on('error', sass.logError))
-	    .pipe(gulp.dest('./dist/css'));
+	gulp.src('./src/styles/*.scss')
+	    .pipe(sass({
+    		includePaths: bourbon,
+    		includePaths: neat
+  		}).on('error', sass.logError))
+	    .pipe(gulp.dest('./dist/css'))
+	    .pipe(connect.reload());
 });
 
-gulp.task('sass:watch', function () {
-  	gulp.watch('./src/styles/**/*.scss', ['sass']);
-});
-
-gulp.task('autoprefixer', ['clean'], function () {
-	return gulp.src('./dist/css/styles.css')
+// then add vendor prefixes to compiled css
+gulp.task('autoprefixer', ['sass'], function () {
+	gulp.src('./dist/css/styles.css')
 		.pipe(autoprefixer({
 			browsers: ['last 2 versions'],
 			cascade: false
 		}))
-		.pipe(gulp.dest('./dist/css/styles.css'));
+		.pipe(gulp.dest('./dist/css/styles.css'))
+		.pipe(connect.reload());
 });
+
+// then watch sass for changes
+gulp.task('sass:watch', ['base'], function () {
+  	gulp.watch('src/styles/**/*.scss', ['base']);
+});
+
+
+
+
+
 
 
 // JS CONCATENATION
 gulp.task('scripts-app', ['clean'], function() {
-  	return gulp.src([
+  	gulp.src([
 	  		'src/scripts/app/vendor/ngMask.js',
 	        'src/scripts/app/vendor/rcMailgun.js',
 	        'src/scripts/app/services/services.js',
@@ -67,11 +93,12 @@ gulp.task('scripts-app', ['clean'], function() {
 	        'src/scripts/app/app.js'
   		])
 	    .pipe(concat('app.js'))
-	    .pipe(gulp.dest('./dist/js/'));
+	    .pipe(gulp.dest('./dist/js/'))
+	    .pipe(connect.reload());
 });
 
 gulp.task('scripts-head', ['clean'], function() {
-	return gulp.src([
+	gulp.src([
 			'src/scripts/vendor/console.min.js',
 	        'src/scripts/vendor/requestAnimationFrame.min.js',
 	        'src/scripts/vendor/modernizr.custom.min.js',
@@ -81,11 +108,12 @@ gulp.task('scripts-head', ['clean'], function() {
 	        'src/scripts/vendor/picturefill.min.js'
 		])
 	    .pipe(concat('head.js'))
-	    .pipe(gulp.dest('./dist/js/'));
+	    .pipe(gulp.dest('./dist/js/'))
+	    .pipe(connect.reload());
 });
 
 gulp.task('scripts-vendor', ['clean'], function() {
-	return gulp.src([
+	gulp.src([
 			'src/scripts/vendor/lodash.min.js',
 	        'src/scripts/vendor/parseuri.min.js',
 	        'src/scripts/vendor/fastclick.min.js',
@@ -97,42 +125,65 @@ gulp.task('scripts-vendor', ['clean'], function() {
 	        'src/scripts/vendor/matchmedia-ng.min.js',
 	        'src/scripts/vendor/angular-scroll.min.js',
 	        'src/scripts/vendor/bowser.min.js',
-	        'src/scripts/vendor/moment.min.js',
+	        // 'src/scripts/vendor/moment.min.js',
 	        'src/scripts/vendor/he.min.js',
 	        'src/scripts/vendor/mobiscroll.custom-2.15.0.min.js',
 	        'src/scripts/vendor/catchall.js'
 		])
 	    .pipe(concat('vendor.js'))
-	    .pipe(gulp.dest('./dist/js/'));
+	    .pipe(gulp.dest('./dist/js/'))
+	    .pipe(connect.reload());
 });
 
 
-//	LETS RUN US A SERVER!  HOOOOOOO BOY!
-gulp.task('webserver', ['pug', 'styles', 'scripts'], function() {
-  	gulp.src('./dist/')
-    	.pipe(webserver({
-    		path: '/dist/',
-      		fallback: 'index.html',
-    		port: 6660,
-      		livereload: true,
-      		directoryListing: true,
-      		open: true
-    	}));
+// copy over inline javascript files
+gulp.task('inline:copy', ['clean'], function() {
+	gulp.src('src/scripts/inline/*.js')
+  		.pipe(gulp.dest('dist/js/inline/'))
+  		.pipe(connect.reload());
+});
+
+
+// 
+gulp.task('scripts:watch', ['base'], function () {
+  	gulp.watch('src/scripts/**/*.js', ['base']);
 });
 
 
 
-// Watch for changes, run default build on change
-gulp.task('watch', function () {
-    watch('./src/**/*', ['base']);
+
+
+
+
+// copy over misc. assets
+gulp.task('assets:copy', ['clean'], function() {
+	gulp.src('src/assets/**/*')
+		.pipe(gulp.dest('dist/assets/'))
+		.pipe(connect.reload());
 });
+
+
+
+// START A SERVER
+gulp.task('connect', ['base'], function() {
+  	return connect.server({
+    	root: 'dist/',
+    	livereload: true
+  	});
+});
+
+
+
+
 
 
 // DELEGATION TASKS
-gulp.task('styles', ['sass', 'autoprefixer', 'sass:watch']);				// all css garbage
-gulp.task('scripts', ['scripts-app', 'scripts-head', 'scripts-vendor']);	// all js garbage
-gulp.task('base', ['clean', 'pug', 'styles', 'scripts']);					// the necessities (complete compilation)
+gulp.task('watch', ['sass:watch', 'scripts:watch', 'markup:watch']);		// Watch for changes, run default build on change
+gulp.task('styles', ['sass', 'autoprefixer']);								// all css garbage
+gulp.task('scripts', ['scripts-app', 'scripts-head', 'scripts-vendor', 'inline:copy']);	// all js garbage
+gulp.task('copy', ['assets:copy']);
+gulp.task('base', ['clean', 'pug', 'styles', 'scripts', 'copy']);					// the necessities (complete compilation)
 
 
 // MAIN TASKS:
-gulp.task('default', ['base', 'webserver', 'watch']);	// compile, serve, watch 
+gulp.task('default', ['base', 'connect', 'watch']);		// compile, serve, watch 

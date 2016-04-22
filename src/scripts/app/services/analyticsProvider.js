@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.services')
+    angular.module('ms.services')
 
     .provider('Analytics', function() {
         var created = false,

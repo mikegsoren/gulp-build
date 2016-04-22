@@ -1,0 +1,141 @@
+// Vendors
+
+// And last but not least, you will probably have a vendors/ folder containing all the CSS files from external
+// libraries and frameworks – Bootstrap, jQueryUI, FancyCarouselSliderjQueryPowered, and so on. Putting those
+// aside in the same folder is a good way to tell “Hey, this is not from me, not my code, not my responsibility”.
+
+@mixin theme-override($accent-color: #4eccc4, $background-color: #f7f7f7, $text-color: #454545) {
+
+    .mbsc-mobiscroll {
+        .dwwr {
+            background: $background-color;
+            color: $text-color;
+        }
+        .dwv {
+            color: $accent-color;
+        }
+        .dwbw {
+            display: block;
+            float: right;
+        }
+        .dwb {
+            color: $accent-color;
+        }
+        .dwb-a {
+            // @include rgba-background(rgba($accent-color, 0.3));
+        }
+        .dwl {
+            color: $accent-color;
+        }
+        .dw-hl {
+            // @include rgba-background(rgba($accent-color, 0.3));
+        }
+        .dwwol {
+            border-top: 1px solid $accent-color;
+            border-bottom: 1px solid $accent-color;
+        }
+        .dwwb {
+            color: $accent-color;
+            background: $background-color;
+           &.dwb-a:before {
+                // @include rgba-background(rgba($accent-color, 0.3));
+            }
+        }
+        .dw-cal-sc-c {
+            background: $background-color;
+        }
+        .dw-cal-btn-txt {
+            color: $accent-color;
+        }
+        .dw-cal-days {
+            color: $accent-color;
+            border-bottom: 1px solid $accent-color;
+        }
+        .dw-week-nrs-c {
+            color: $accent-color;
+            background: $background-color;
+        }
+        .dw-cal-tabs {
+            .dw-sel {
+                background: $accent-color;
+                .dw-i {
+                    color: $background-color;
+                }
+            }
+        }
+        .dw-cal-tab {
+            border: 1px solid $accent-color;
+            .dw-i {
+                color: $text-color;
+            }
+        }
+        .dw-cal-day-m {
+            background: $text-color;
+        }
+        .dw-sel {
+            .dw-cal-day-m {
+                background: $background-color;
+            }
+            .dw-cal-day-m-c {
+                background: $background-color;
+            }
+        }
+        .dw-cal-day-m-c {
+            background: $accent-color;
+        }
+        .dw-cal-day-txt {
+            color: $background-color;
+            background: $text-color;
+        }
+        .dw-cal-events {
+            color: $background-color;
+        }
+        .dw-cal-event-color {
+            background: $accent-color;
+        }
+        .dw-cal-event-time {
+            color: $accent-color;
+        }
+        .dw-cal-event-dur {
+            color: $accent-color;
+        }
+        .dw-bubble-bottom .dw-arr {
+            border-color: transparent transparent $background-color transparent;
+        }
+        .dw-bubble-top .dw-arr {
+            border-color: $background-color transparent transparent transparent;
+        }
+        .dw-msel:before {
+            color: $accent-color;
+        }
+        .dw-cal .dw-sel .dw-i {
+            background: $accent-color;
+            color: white;
+        }
+        .dw-cal-day-hl .dw-i {
+            border-color: $accent-color;
+        }
+    }
+}
+
+.injector--mobiscroll {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+
+    &.open {
+        z-index: 9999999;
+    }
+
+    *, *:before, *:after {
+        position: static;
+        box-sizing: content-box;
+    }
+}
+
+@import "_mobiscroll.scss";
+
+@include theme-override(#0A5992);

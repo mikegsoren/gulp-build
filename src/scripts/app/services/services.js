@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.services', [])
+    angular.module('ms.services', [])
 
     .factory('_', ['$window',
         function($window) {

@@ -1,6 +1,6 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.controllers', ['cdmp.services']);
+    angular.module('ms.controllers', ['ms.services']);
 
 }).call(this);

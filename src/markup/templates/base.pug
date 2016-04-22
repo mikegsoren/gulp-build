@@ -2,7 +2,7 @@ include /mixins/all.pug
 include /mixins/accordion.pug
 
 doctype
-html(lang="en", xmlns:ng="http://angularjs.org", id="ng-app", ng-app="party", ng-controller="MainController", ng-class="{'no-scroll': stickyFooterOpen}", class=(dev === true) ? "in-dev" : "")
+html(lang="en", xmlns:ng="http://angularjs.org", id="ng-app", ng-app="ms", ng-controller="MainController", ng-class="{'no-scroll': stickyFooterOpen}", class=(dev === true) ? "in-dev" : "")
 
     //- pull in meta data from page
     block meta
@@ -56,7 +56,7 @@ html(lang="en", xmlns:ng="http://angularjs.org", id="ng-app", ng-app="party", ng
         .injector--mobiscroll
 
         +cbscript("js/vendor.js")
-        +cbscript("js/templates.js")
+        //- +cbscript("js/templates.js")
         +cbscript("js/app.js")
 
         if dev

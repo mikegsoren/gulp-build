@@ -1,0 +1,9 @@
+// Layout
+
+// The layout/ directory (sometimes called partials/) usually contains a number of files,
+// each of them setting some styles for the main sections of the layout (header, footer,
+// and so on). It also contains the _grid file which is the grid system used to build
+// the layout.
+
+@import "_header--global.scss";
+@import "_footer--global.scss";

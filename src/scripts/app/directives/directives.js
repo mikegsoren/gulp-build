@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.directives', [])
+    angular.module('ms.directives', [])
 
     .directive('trackEvent', ['$window', 'Analytics',
 

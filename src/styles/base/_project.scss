@@ -1,0 +1,385 @@
+*, *:before, *:after {
+    position: relative;
+    box-sizing: border-box;
+    max-height: 1000000px; // Disables Android's font boosting
+    background: url(""); // Disables Android's Auto-Fit Pages
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); // Disables Tap Highlight Color
+}
+
+html, body {
+    // height: 100%;
+}
+
+html {
+    font-size: 100%;
+    overflow-y: auto;
+
+    @include mq("lg") {
+        // min-width: 960px;
+        min-width: 1024px;
+    }
+
+    @include mq("sm") {
+        min-width: 320px;
+
+        @include mq("ol") {
+            // min-width: 640px;
+        }
+
+        @include mq("l") {
+            // landscape styles here
+            min-width: 640px;
+        }
+
+        @include mq("p") {
+            // portrait styles here
+        }
+    }
+
+    &.no-scroll {
+        overflow-y: initial;
+
+        body {
+            overflow: hidden;
+        }
+    }
+
+    &.keyboard-open {
+        @include mq("sm") {
+            header.header--global,
+            footer.footer--sticky {
+                visibility: hidden !important;
+                pointer-events: none !important;
+                // display: none !important;
+            }
+        }
+    }
+}
+
+body {
+
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+
+    &:focus {
+        outline: 0;
+        outline: thin dotted \9; // IE6-9
+    }
+    &:hover {
+        text-decoration: none;
+    }
+
+    &.scroll-point {
+        margin-top: -10px;
+        position: absolute;
+        display: block;
+    }
+}
+
+p a {
+    display: inline;
+}
+
+input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: normal;
+    color: inherit;
+    padding: 0;
+    margin: 0;
+}
+
+label {
+    cursor: pointer;
+}
+
+.nobr, nobr {
+    white-space: nowrap;
+}
+
+sub, sup {
+  font-size: 0.6em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+
+    .eq-ie9 & {
+        top: -0.7em;
+    }
+    .eq-ie7 & {
+        top: -0.8em;
+    }
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+picture {
+    @include inline-block;
+
+    img {
+        max-width: 100%;
+        height: auto;
+        left: 0px;
+        top: 0px;
+    }
+}
+
+a > picture {
+    display: block;
+}
+
+.eq-ie9 * {
+    filter: none !important;
+}
+
+.eq-ie8 * {
+    filter: inherit;
+}
+
+.wrap--full {
+    @include mq("sm") {
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+}
+
+.wrap--content {
+    margin: 0 auto;
+    height: 100%;
+    @include clearfix; // stop margin collapse
+
+    @include mq('xl') {
+        width: 1200px;
+        padding: 42px 0;
+    }
+    @include mq("lg") {
+        width: percentage(960/1025);
+        padding: 42px 0;
+    }
+    @include mq('md') {
+        width: 90%;
+        padding: 24px 5%;
+    }
+    @include mq("sm") {
+        width: 95%;
+        min-width: 320px;
+        padding: 15px 2.5%;
+
+        &.wrap--full {
+            width: 100%;
+            margin-left: 0;
+            padding: 0;
+        }
+    }
+}
+
+.cf {
+    @include clearfix;
+}
+
+.cb {
+    clear: both;
+}
+
+.cr {
+    clear: right;
+}
+
+.cl {
+    clear: left;
+}
+
+
+.hide--xl {
+    @include mq('xl') {
+        display: none !important;
+    }
+}
+.hide--lg {
+    @include mq("lg") {
+        display: none !important;
+    }
+}
+.hide--md {
+    @include mq("md") {
+        display: none !important;
+    }
+}
+.hide--sm {
+    @include mq("sm") {
+        display: none !important;
+    }
+}
+
+header.header--page {
+
+}
+
+
+.center {
+    text-align: center;
+}
+
+
+ul.list--bulleted {
+    display: block;
+
+    @include mq('xl') {
+        padding-left: 20px;
+    }
+    @include mq('lg', 'md') {
+        padding-left: 15px;
+    }
+    @include mq('sm') {
+        padding-left: 10px;
+    }
+
+    > li {
+        display: block;
+    }
+
+    > li:before {
+        content: '\2022';
+        width: 0;
+        overflow: visible;
+        float: left;
+        font-size: 0.8em;
+
+        @include mq('xl') {
+            margin: 0 8px -20px;
+        }
+        @include mq('lg', 'md') {
+            margin: 0 5px 0 -15px;
+        }
+        @include mq('sm') {
+            margin: 0 2px 0 -10px;
+        }
+    }
+}
+
+ul.list--dashed {
+    display: block;
+
+    @include mq('xl') {
+        padding-left: 20px;
+    }
+    @include mq('lg', 'md') {
+        padding-left: 15px;
+    }
+    @include mq('sm') {
+        padding-left: 10px;
+    }
+
+    > li {
+        display: block;
+    }
+    > li:before {
+        content: '\2013';
+        width: 0;
+        overflow: visible;
+        float: left;
+        font-size: 0.8em;
+
+        @include mq('xl') {
+            margin: 0 8px -20px;
+        }
+        @include mq('lg', 'md') {
+            margin: 0 5px 0 -15px;
+        }
+        @include mq('sm') {
+            margin: 0 2px 0 -10px;
+        }
+    }
+    &.dash--m {
+
+        > li:before {
+            content: '\2014';
+        }
+    }
+}
+
+ol.list--lettered {
+    display: block;
+    counter-reset: lettered;
+
+    @include mq('xl') {
+        padding-left: 20px;
+    }
+    @include mq('lg', 'md') {
+        padding-left: 15px;
+    }
+    @include mq('sm') {
+        padding-left: 10px;
+    }
+
+    > li {
+        position: relative;
+        display: block;
+        counter-increment: lettered;
+    }
+    > li:before {
+        content: counter(lettered, lower-alpha);
+        margin: 0 5px 0 -15px;
+        width: 0;
+        overflow: visible;
+        float: left;
+
+        @include mq('xl') {
+            margin: 0 8px -20px;
+        }
+        @include mq('lg', 'md') {
+            margin: 0 5px 0 -15px;
+        }
+        @include mq('sm') {
+            margin: 0 2px 0 -10px;
+        }
+    }
+}
+
+ol.list--numbered {
+    display: block;
+    counter-reset: numbered;
+
+    @include mq('xl') {
+        padding-left: 20px;
+    }
+    @include mq('lg', 'md') {
+        padding-left: 15px;
+    }
+    @include mq('sm') {
+        padding-left: 10px;
+    }
+
+    > li {
+        display: block;
+        counter-increment: numbered;
+    }
+    > li:before {
+        content: counter(numbered, decimal) ".";
+        width: 0;
+        overflow: visible;
+        float: left;
+
+        @include mq('xl') {
+            margin: 0 8px -20px;
+        }
+        @include mq('lg', 'md') {
+            margin: 0 5px 0 -15px;
+        }
+        @include mq('sm') {
+            margin: 0 2px 0 -10px;
+        }
+    }
+}
+

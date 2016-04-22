@@ -1,5 +1,41 @@
-body {
-	background-color: salmon;
+@charset "UTF-8";
 
-	color: blue;
-}
+
+// Utilities
+// - variables
+// - mixins
+@import "utilities/__utilities.scss";
+
+// Base
+@import "base/__base.scss";
+// The base/ folder holds what we might call the boilerplate stuff for your project.
+// In there, you might find the reset (or Normalize.css, or whatever), probably some
+// stuff dealing with typography, and, depending on the project, maybe some other files.
+
+// Modules
+// - forms
+// - modals
+// - any styles for reusable site modules (should be added in separate files)
+@import "modules/__modules.scss";
+
+// Partials
+// - This is analogous to the Pug partials
+// - These are large sections of a page that are used globally
+// - header--global
+// - footer--global
+@import "partials/__partials.scss";
+
+// Pages
+// - every page on the website
+// - each page's scss should be wrapped in the page class that shows on the html element
+@import "pages/__pages.scss";
+
+// Views
+// - mainly modals
+@import "views/__views.scss";
+
+// Vendors
+@import "vendor/__vendor.scss";
+// And last but not least, you will probably have a vendors/ folder containing all the CSS files from external
+// libraries and frameworks – Bootstrap, jQueryUI, FancyCarouselSliderjQueryPowered, and so on. Putting those
+// aside in the same folder is a good way to tell “Hey, this is not from me, not my code, not my responsibility”.

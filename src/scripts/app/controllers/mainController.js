@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('cdmp.controllers')
+    angular.module('ms.controllers')
 
     .controller('MainController', ['$scope', '$rootScope', '$window', '$document', '$timeout', '$http', 'matchmedia', 'ModalService', 'Analytics', '_', 'he', 'parseUri',
         function($scope, $rootScope, $window, $document, $timeout, $http, matchmedia, ModalService, Analytics, _, he, parseUri) {
