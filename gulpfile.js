@@ -1,9 +1,13 @@
 var gulp 			= require('gulp'),
-	clean 			= require('gulp-clean'),
+	plumber			= require('gulp-plumber'),
+	// clean 			= require('gulp-clean'),
+	del 			= require('del'),
 	pug 			= require('gulp-pug'),
 	bourbon 		= require("node-bourbon").includePaths,
 	neat 			= require("node-neat").includePaths,
 	sass 			= require('gulp-sass'),
+	postcss 		= require('gulp-postcss'),
+	// cssnano 		= require('cssnano'),
 	autoprefixer 	= require('gulp-autoprefixer'),
 	concat 			= require('gulp-concat'),
 	connect 		= require('gulp-connect'),
@@ -14,16 +18,26 @@ var gulp 			= require('gulp'),
 
 // clean dist before compiling:
 gulp.task('clean', function () {
-	return gulp.src('dist/**/*', {read: false})
-		.pipe(clean());
+
+	return del('dist/**.*');
+
+
+	// return gulp.src('dist/**/*', {read: false})
+ //  		.pipe(plumber({
+	//         errorHandler: function (err) {
+	//             console.log(err);
+	//             this.emit('end');
+	//         }
+	//     }))
+	// 	.pipe(clean());
 });
 
 
 
 // JADE/PUG TEMPLATES
-gulp.task('pug', ['clean'], function() {
+gulp.task('pug-pages', ['clean'], function() {
 
-  	gulp.src('src/markup/pages/**/*.pug')
+  	return gulp.src('src/markup/pages/**/*.pug')
     	.pipe(pug({
     		pretty: true,
     		basedir: 'src/markup/'
@@ -32,8 +46,19 @@ gulp.task('pug', ['clean'], function() {
     	.pipe(connect.reload());
 });
 
+gulp.task('pug-views', ['clean'], function() {
+
+  	return gulp.src('src/markup/views/**/*.pug')
+    	.pipe(pug({
+    		pretty: true,
+    		basedir: 'src/markup/'
+    	}))
+    	.pipe(gulp.dest('dist/views'))
+    	.pipe(connect.reload());
+});
+
 gulp.task('markup:watch', ['base'], function () {
-	gulp.watch('src/markup/**/*.pug', ['base']);
+	return gulp.watch('src/markup/**/*.pug', ['base']);
 });
 
 
@@ -46,29 +71,20 @@ gulp.task('markup:watch', ['base'], function () {
 // first compile sass styles
 gulp.task('sass', ['clean'], function () {
   
-	gulp.src('./src/styles/*.scss')
+	return gulp.src('./src/styles/*.scss')
 	    .pipe(sass({
     		includePaths: bourbon,
     		includePaths: neat
   		}).on('error', sass.logError))
-	    .pipe(gulp.dest('./dist/css'))
-	    .pipe(connect.reload());
-});
-
-// then add vendor prefixes to compiled css
-gulp.task('autoprefixer', ['sass'], function () {
-	gulp.src('./dist/css/styles.css')
-		.pipe(autoprefixer({
-			browsers: ['last 2 versions'],
-			cascade: false
+    	.pipe(autoprefixer({
+  			browsers: ['last 2 versions']
 		}))
-		.pipe(gulp.dest('./dist/css/styles.css'))
-		.pipe(connect.reload());
+	    .pipe(gulp.dest('./dist/css'));
 });
 
 // then watch sass for changes
 gulp.task('sass:watch', ['base'], function () {
-  	gulp.watch('src/styles/**/*.scss', ['base']);
+  	return gulp.watch('src/styles/**/*.scss', ['base']);
 });
 
 
@@ -79,7 +95,7 @@ gulp.task('sass:watch', ['base'], function () {
 
 // JS CONCATENATION
 gulp.task('scripts-app', ['clean'], function() {
-  	gulp.src([
+  	return gulp.src([
 	  		'src/scripts/app/vendor/ngMask.js',
 	        'src/scripts/app/vendor/rcMailgun.js',
 	        'src/scripts/app/services/services.js',
@@ -98,7 +114,7 @@ gulp.task('scripts-app', ['clean'], function() {
 });
 
 gulp.task('scripts-head', ['clean'], function() {
-	gulp.src([
+	return gulp.src([
 			'src/scripts/vendor/console.min.js',
 	        'src/scripts/vendor/requestAnimationFrame.min.js',
 	        'src/scripts/vendor/modernizr.custom.min.js',
@@ -113,7 +129,7 @@ gulp.task('scripts-head', ['clean'], function() {
 });
 
 gulp.task('scripts-vendor', ['clean'], function() {
-	gulp.src([
+	return gulp.src([
 			'src/scripts/vendor/lodash.min.js',
 	        'src/scripts/vendor/parseuri.min.js',
 	        'src/scripts/vendor/fastclick.min.js',
@@ -138,7 +154,7 @@ gulp.task('scripts-vendor', ['clean'], function() {
 
 // copy over inline javascript files
 gulp.task('inline:copy', ['clean'], function() {
-	gulp.src('src/scripts/inline/*.js')
+	return gulp.src('src/scripts/inline/*.js')
   		.pipe(gulp.dest('dist/js/inline/'))
   		.pipe(connect.reload());
 });
@@ -146,7 +162,7 @@ gulp.task('inline:copy', ['clean'], function() {
 
 // 
 gulp.task('scripts:watch', ['base'], function () {
-  	gulp.watch('src/scripts/**/*.js', ['base']);
+  	return gulp.watch('src/scripts/**/*.js', ['base']);
 });
 
 
@@ -157,9 +173,21 @@ gulp.task('scripts:watch', ['base'], function () {
 
 // copy over misc. assets
 gulp.task('assets:copy', ['clean'], function() {
-	gulp.src('src/assets/**/*')
+	return gulp.src('src/assets/**/*')
 		.pipe(gulp.dest('dist/assets/'))
 		.pipe(connect.reload());
+});
+gulp.task('assets:watch', ['base'], function () {
+  	return gulp.watch('src/assets/**/*.*', ['assets:copy']);
+});
+
+gulp.task('images:copy', ['clean'], function() {
+	return gulp.src('src/images/**/*')
+		.pipe(gulp.dest('dist/img/'))
+		.pipe(connect.reload());
+});
+gulp.task('images:watch', ['base'], function () {
+  	return gulp.watch('src/images/**/*', ['images:copy']);
 });
 
 
@@ -168,21 +196,32 @@ gulp.task('assets:copy', ['clean'], function() {
 gulp.task('connect', ['base'], function() {
   	return connect.server({
     	root: 'dist/',
-    	livereload: true
+    	livereload: true,
+    	host: '0.0.0.0'
   	});
 });
 
+
+
+// handle errors
+function swallowError (error) {
+
+  	// If you want details of the error in the console
+  	console.log(error.toString())
+
+  	this.emit('end')
+}
 
 
 
 
 
 // DELEGATION TASKS
-gulp.task('watch', ['sass:watch', 'scripts:watch', 'markup:watch']);		// Watch for changes, run default build on change
-gulp.task('styles', ['sass', 'autoprefixer']);								// all css garbage
+gulp.task('watch', ['sass:watch', 'scripts:watch', 'markup:watch', 'assets:watch', 'images:watch']);		// Watch for changes, run default build on change
+gulp.task('styles', ['sass']);								// all css garbage
 gulp.task('scripts', ['scripts-app', 'scripts-head', 'scripts-vendor', 'inline:copy']);	// all js garbage
-gulp.task('copy', ['assets:copy']);
-gulp.task('base', ['clean', 'pug', 'styles', 'scripts', 'copy']);					// the necessities (complete compilation)
+gulp.task('copy', ['assets:copy', 'images:copy']);
+gulp.task('base', ['clean', 'pug-pages', 'pug-views', 'styles', 'scripts', 'copy']);					// the necessities (complete compilation)
 
 
 // MAIN TASKS:
